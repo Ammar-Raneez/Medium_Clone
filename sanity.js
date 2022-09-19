@@ -1,7 +1,8 @@
 import {
   createClient,
-  createImageUrlBuilder,
 } from 'next-sanity';
+import imageUrlBuilder from '@sanity/image-url';
+
 
 export const config = {
   // Without the NEXT_PUBLIC_ prefix, the env var will not be available in the client (only api folder)
@@ -31,4 +32,4 @@ export const sanityClient = createClient(config);
  * Set up a helper function for generating Image URLs with only the asset reference data in your documents.
  * Read more: https://www.sanity.io/docs/image-url
  **/
-export const urlFor = (source) => createImageUrlBuilder(config).image(source)
+export const urlFor = (source) => imageUrlBuilder(config).image(source);
