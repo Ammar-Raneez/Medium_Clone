@@ -26,10 +26,19 @@ function SinglePost({ posts, post }: SinglePostProps) {
     formState: { errors },
   } = useForm<IformInput>()
 
-  console.log(post);
+  const onSubmit: SubmitHandler<IformInput> = async (data) => {
+    console.log('New comment: ', data);
+    try {
+      await fetch('/api/createComment', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
 
-  const onSubmit: SubmitHandler<IformInput> = async () => {
-
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitted(false);
+      console.log(err);
+    }
   }
 
   return (
@@ -84,65 +93,73 @@ function SinglePost({ posts, post }: SinglePostProps) {
       </article>
 
       <hr className="my-5 mx-auto max-w-lg border border-yellow-500" />
-      <form
-        className="mx-auto mb-10 flex max-w-2xl flex-col p-5 "
-      >
-        <h3 className="text-sm text-yellow-500">Enjoyed this article ? </h3>
-        <h4 className="text-3xl font-bold">Leave a comment below !</h4>
-        <input
-          // For connection with React Hook Form
-          {...register('_id')}
-          type="hidden"
-          value={post._id}
-          name="_id"
-        />
-
-        <label className="mb-5 block">
-          <span className="text-gray-700">Name</span>
-          <input
-            {...register('name', { required: true })}
-            className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
-            placeholder="Enter your name"
-            type="text"
-          />
-        </label>
-        <label className="mb-5 block">
-          <span className="text-gray-700">Email</span>
-          <input
-            {...register('email', { required: true })}
-            className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
-            placeholder="Enter your email"
-            type="EMAIL"
-          />
-        </label>
-        <label className="mb-5 block">
-          <span className="text-gray-700">Comment</span>
-          <textarea
-            {...register('comment', { required: true })}
-            className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
-            placeholder="Enter comment"
-            rows={8}
-          />
-        </label>
-
-        {/* Error handlers for each field */}
-        <div className="flex flex-col p-5 ">
-          {errors.name && (
-            <span className="text-red-500">The Name field is requried</span>
-          )}
-          {errors.email && (
-            <span className="text-red-500">The Email field is requried</span>
-          )}
-          {errors.comment && (
-            <span className="text-red-500">The Comment field is requried</span>
-          )}
+      {submitted ? (
+        <div className="my-10 mx-auto flex max-w-2xl flex-col bg-yellow-500 py-10 px-5 text-white ">
+          <h3 className="text-3xl font-bold">Thank you for the comment !</h3>
+          <p>Once it is approved, it will appear below</p>
         </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mx-auto mb-10 flex max-w-2xl flex-col p-5 "
+        >
+          <h3 className="text-sm text-yellow-500">Enjoyed this article ? </h3>
+          <h4 className="text-3xl font-bold">Leave a comment below !</h4>
+          <input
+            // For connection with React Hook Form
+            {...register('_id')}
+            type="hidden"
+            value={post._id}
+            name="_id"
+          />
 
-        <input
-          type="submit"
-          className="focus:shadow-outline cursor-pointer rounded bg-yellow-500 py-2 px-4 font-bold text-white hover:bg-yellow-400 focus:outline-none"
-        />
-      </form>
+          <label className="mb-5 block">
+            <span className="text-gray-700">Name</span>
+            <input
+              {...register('name', { required: true })}
+              className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
+              placeholder="Enter your name"
+              type="text"
+            />
+          </label>
+          <label className="mb-5 block">
+            <span className="text-gray-700">Email</span>
+            <input
+              {...register('email', { required: true })}
+              className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
+              placeholder="Enter your email"
+              type="EMAIL"
+            />
+          </label>
+          <label className="mb-5 block">
+            <span className="text-gray-700">Comment</span>
+            <textarea
+              {...register('comment', { required: true })}
+              className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
+              placeholder="Enter comment"
+              rows={8}
+            />
+          </label>
+
+          {/* Error handlers for each field */}
+          <div className="flex flex-col p-5 ">
+            {errors.name && (
+              <span className="text-red-500">The Name field is requried</span>
+            )}
+            {errors.email && (
+              <span className="text-red-500">The Email field is requried</span>
+            )}
+            {errors.comment && (
+              <span className="text-red-500">The Comment field is requried</span>
+            )}
+          </div>
+
+          <input
+            type="submit"
+            className="focus:shadow-outline cursor-pointer rounded bg-yellow-500 py-2 px-4 font-bold text-white hover:bg-yellow-400 focus:outline-none"
+          />
+        </form>
+      )}
     </main>
   );
 }
@@ -178,7 +195,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // Static Site Generation - fetch static data on build time & cache
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const querySingle = `
-    *[_type=='post' && slug.current == $slug][0] {
+    *[_type == 'post' && slug.current == $slug][0] {
       _id,
       _createdAt,
       title,
@@ -195,10 +212,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       ] {
         name,
         last,
-        comment
-        ,
-        _createdAt
-        ,
+        comment,
+        _createdAt,
         userImage
       },
       description,
