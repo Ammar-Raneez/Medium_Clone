@@ -1,6 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Header from '../../components/Header';
-import { sanityClient } from '../../sanity';
+import { sanityClient, urlFor } from '../../sanity';
 import { Post } from '../../typings';
 
 interface SinglePostProps {
@@ -12,7 +12,30 @@ function SinglePost({ posts, post }: SinglePostProps) {
   console.log(post);
 
   return (
-    <Header />
+    <main>
+      <Header />
+      <img
+        className="h-40 w-full object-cover"
+        src={urlFor(post.mainImage).url()!}
+        alt="cover"
+      />
+      <article className="mx-auto max-w-3xl p-5">
+        <h1 className="mt-10 mb-3 text-3xl">{post.title}</h1>
+        <h2 className="text-xl font-light text-gray-500">{post.description}</h2>
+        <div className="flex items-center space-x-2 py-3 ">
+          <img
+            className="h-10 w-10 rounded-full"
+            src={urlFor(post.author.image).url()!}
+            alt=""
+          />
+          <p className="text-sm font-extralight">
+            Blog post by{' '}
+            <span className="text-green-600">{post.author.name}</span> -
+            Published at {new Date(post._createdAt).toLocaleString()}
+          </p>
+        </div>
+      </article>
+    </main>
   );
 }
 
