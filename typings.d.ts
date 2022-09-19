@@ -4,6 +4,7 @@ export interface Post {
   title: string;
   description: string;
   author: Author;
+  comments: Comment[];
   mainImage: {
     asset: {
       url: string;
@@ -18,4 +19,11 @@ export interface Post {
 interface Author {
   name: string;
   image: string;
+}
+
+export interface Comment {
+  _id: string;
+  comment: string;
+  email: string;
+  name: string;
 }
