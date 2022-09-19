@@ -1,8 +1,16 @@
 import Head from 'next/head';
 import Banner from '../components/Banner';
 import Header from '../components/Header';
+import { sanityClient } from '../sanity';
+import { Post } from '../typings';
 
-export default function Home() {
+interface HomeProps {
+  posts: Post[];
+}
+
+export default function Home({ posts }: HomeProps) {
+  console.log(posts);
+
   return (
     <div>
       <Head>
@@ -16,3 +24,25 @@ export default function Home() {
     </div>
   )
 }
+
+export const getServerSideProps = async (context) => {
+  const query = `
+    *[_type == 'post'] {
+      _id,
+      author -> {
+        name,
+        image
+      },
+      description,
+      mainImage,
+      slug
+    }
+  `;
+
+  const posts = await sanityClient.fetch(query);
+  return {
+    props: {
+      posts,
+    }
+  }
+};
