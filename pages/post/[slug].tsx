@@ -12,6 +12,10 @@ interface SinglePostProps {
 function SinglePost({ posts, post }: SinglePostProps) {
   console.log(post);
 
+  const onSubmit = async () => {
+
+  }
+
   return (
     <main>
       <Header />
@@ -44,16 +48,16 @@ function SinglePost({ posts, post }: SinglePostProps) {
             projectId={process.env.NODE_PUBLIC_SANITY_PROJECT_ID}
             content={post.body}
             serializers={{
-              h1: (props: any) => (
+              h1: (props) => (
                 <h1 className="my-5 text-2xl font-bold" {...props} />
               ),
-              h2: (props: any) => (
+              h2: (props) => (
                 <h1 className="my-5 text-xl font-bold" {...props} />
               ),
-              li: ({ children }: any) => (
+              li: ({ children }) => (
                 <li className="ml-4 list-disc">{children}</li>
               ),
-              link: ({ href, children }: any) => (
+              link: ({ href, children }) => (
                 <a href={href} className="text-blue-500">
                   {children}
                 </a>
@@ -62,6 +66,43 @@ function SinglePost({ posts, post }: SinglePostProps) {
           />
         </div>
       </article>
+
+      <hr className="my-5 mx-auto max-w-lg border border-yellow-500" />
+      <form
+        className="mx-auto mb-10 flex max-w-2xl flex-col p-5 "
+      >
+        <h3 className="text-sm text-yellow-500">Enjoyed this article ? </h3>
+        <h4 className="text-3xl font-bold">Leave a comment below !</h4>
+        <label className="mb-5 block">
+          <span className="text-gray-700">Name</span>
+          <input
+            className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
+            placeholder="Enter your name"
+            type="text"
+          />
+        </label>
+        <label className="mb-5 block">
+          <span className="text-gray-700">Email</span>
+          <input
+            className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
+            placeholder="Enter your email"
+            type="EMAIL"
+          />
+        </label>
+        <label className="mb-5 block">
+          <span className="text-gray-700">Comment</span>
+          <textarea
+            className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
+            placeholder="Enter comment"
+            rows={8}
+          />
+        </label>
+
+        <input
+          type="submit"
+          className="focus:shadow-outline cursor-pointer rounded bg-yellow-500 py-2 px-4 font-bold text-white hover:bg-yellow-400 focus:outline-none"
+        />
+      </form>
     </main>
   );
 }
