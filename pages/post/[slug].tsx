@@ -1,18 +1,34 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import PortableText from 'react-portable-text';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import Header from '../../components/Header';
 import { sanityClient, urlFor } from '../../sanity';
 import { Post } from '../../typings';
+import { useState } from 'react';
 
 interface SinglePostProps {
   posts: Post[];
   post: Post;
 }
 
+interface IformInput {
+  _id: string
+  name: string
+  email: string
+  comment: string
+}
+
 function SinglePost({ posts, post }: SinglePostProps) {
+  const [submitted, setSubmitted] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IformInput>()
+
   console.log(post);
 
-  const onSubmit = async () => {
+  const onSubmit: SubmitHandler<IformInput> = async () => {
 
   }
 
@@ -73,9 +89,18 @@ function SinglePost({ posts, post }: SinglePostProps) {
       >
         <h3 className="text-sm text-yellow-500">Enjoyed this article ? </h3>
         <h4 className="text-3xl font-bold">Leave a comment below !</h4>
+        <input
+          // For connection with React Hook Form
+          {...register('_id')}
+          type="hidden"
+          value={post._id}
+          name="_id"
+        />
+
         <label className="mb-5 block">
           <span className="text-gray-700">Name</span>
           <input
+            {...register('name', { required: true })}
             className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
             placeholder="Enter your name"
             type="text"
@@ -84,6 +109,7 @@ function SinglePost({ posts, post }: SinglePostProps) {
         <label className="mb-5 block">
           <span className="text-gray-700">Email</span>
           <input
+            {...register('email', { required: true })}
             className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
             placeholder="Enter your email"
             type="EMAIL"
@@ -92,6 +118,7 @@ function SinglePost({ posts, post }: SinglePostProps) {
         <label className="mb-5 block">
           <span className="text-gray-700">Comment</span>
           <textarea
+            {...register('comment', { required: true })}
             className="form-input mt-1 block w-full rounded border py-2 px-3 shadow outline-0 ring-yellow-500 focus:ring"
             placeholder="Enter comment"
             rows={8}
