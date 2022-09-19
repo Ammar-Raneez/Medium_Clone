@@ -125,6 +125,19 @@ function SinglePost({ posts, post }: SinglePostProps) {
           />
         </label>
 
+        {/* Error handlers for each field */}
+        <div className="flex flex-col p-5 ">
+          {errors.name && (
+            <span className="text-red-500">The Name field is requried</span>
+          )}
+          {errors.email && (
+            <span className="text-red-500">The Email field is requried</span>
+          )}
+          {errors.comment && (
+            <span className="text-red-500">The Comment field is requried</span>
+          )}
+        </div>
+
         <input
           type="submit"
           className="focus:shadow-outline cursor-pointer rounded bg-yellow-500 py-2 px-4 font-bold text-white hover:bg-yellow-400 focus:outline-none"
